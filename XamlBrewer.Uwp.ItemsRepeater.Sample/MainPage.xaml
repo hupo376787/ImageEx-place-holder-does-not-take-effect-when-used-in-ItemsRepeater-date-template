@@ -1,0 +1,196 @@
+﻿<Page x:Class="XamlBrewer.Uwp.ItemsRepeater.Sample.MainPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="using:XamlBrewer.Uwp.ItemsRepeater.Sample"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:controls="using:Microsoft.UI.Xaml.Controls"
+      xmlns:hnctl="using:HN.Controls"
+      mc:Ignorable="d">
+    <Page.Resources>
+        <local:TextConverter x:Key="textConvet"/>
+        <local:ImageCompress x:Key="imgConvt"/>
+        <local:HeightConverter x:Key="heightConvt"/>
+
+        <Style TargetType="controls:TeachingTip">
+            <Setter Property="BorderThickness"
+                    Value=".5" />
+            <Setter Property="BorderBrush"
+                    Value="#DB202C" />
+        </Style>
+        <DataTemplate x:Key="GenreTemplate"
+                      x:DataType="local:Genre">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Image VerticalAlignment="Stretch"
+                       HorizontalAlignment="Left"
+                       Margin="6 0 0 0"
+                       Width="52"
+                       Source="/Assets/FilmStrip.png"
+                       Stretch="Fill"
+                       Grid.RowSpan="2" />
+                <TextBlock Foreground="Silver"
+                           FontSize="36"
+                           Margin="66 0 0 0"
+                           Text="{x:Bind Name}" />
+                <ScrollViewer HorizontalScrollBarVisibility="Visible"
+                              HorizontalScrollMode="Enabled"
+                              VerticalScrollMode="Disabled"
+                              Margin="66 0 0 0"
+                              Grid.Row="1">
+                    <controls:ItemsRepeater ItemsSource="{x:Bind Movies}"
+                                            ItemTemplate="{StaticResource MovieTemplate}"
+                                            Layout="{StaticResource HorizontalStackLayout}" />
+                </ScrollViewer>
+            </Grid>
+        </DataTemplate>
+        <controls:StackLayout x:Key="VerticalStackLayout"
+                              Orientation="Vertical"
+                              Spacing="0" />
+        <DataTemplate x:Key="MovieTemplate"
+                      x:DataType="local:Movie">
+            <Button Click="Movie_Click"
+                    DataContext="{x:Bind}"
+                    BorderThickness="0"
+                    Padding="0"
+                    CornerRadius="0">
+                <!--<Image x:Name="img"
+                    Source="{x:Bind PosterUrl, Converter={StaticResource imgConvt}}"
+                       PointerEntered="Element_PointerEntered"
+                       PointerExited="Element_PointerExited"
+                       Height="{x:Bind Title, Converter={StaticResource heightConvt}}"
+                       Stretch="UniformToFill"
+                       HorizontalAlignment="Stretch"
+                       VerticalAlignment="Stretch"
+                       ToolTipService.ToolTip="{x:Bind Title}">
+                </Image>-->
+                <hnctl:ImageEx
+                        RetryCount="5"
+                        RetryDelay="0:0:2"
+                        Stretch="Uniform"
+                        Source="{x:Bind PosterUrl, Converter={StaticResource imgConvt}}">
+                    <hnctl:ImageEx.PlaceholderTemplate>
+                        <DataTemplate>
+                            <Image
+                                    Source="/Assets/Clippy.png"
+                                    Stretch="UniformToFill"/>
+                        </DataTemplate>
+                    </hnctl:ImageEx.PlaceholderTemplate>
+                    <hnctl:ImageEx.LoadingTemplate>
+                        <DataTemplate>
+                            <Image
+                                    Source="/Assets/Clippy.png"
+                                    Stretch="UniformToFill"/>
+                        </DataTemplate>
+                    </hnctl:ImageEx.LoadingTemplate>
+                    <hnctl:ImageEx.FailedTemplate>
+                        <DataTemplate>
+                            <Image
+                                    Source="/Assets/Clippy.png"
+                                    Stretch="UniformToFill"/>
+                        </DataTemplate>
+                    </hnctl:ImageEx.FailedTemplate>
+                </hnctl:ImageEx>
+            </Button>
+        </DataTemplate>
+        <controls:StackLayout x:Key="HorizontalStackLayout"
+                              Orientation="Horizontal" />
+        <controls:CommandBarFlyout x:Name="MovieCommands"
+                                   Placement="Right">
+            <AppBarButton Label="Play"
+                          Icon="Play"
+                          ToolTipService.ToolTip="Play"
+                          Click="Element_Click" />
+            <AppBarButton Label="Info"
+                          Icon="List"
+                          ToolTipService.ToolTip="Info"
+                          Click="Element_Click" />
+            <AppBarButton Label="Download"
+                          Icon="Download"
+                          ToolTipService.ToolTip="Download"
+                          Click="Element_Click" />
+            <controls:CommandBarFlyout.SecondaryCommands>
+                <AppBarButton Label="Buy"
+                              Click="Element_Click" />
+                <AppBarButton Label="Rate"
+                              Click="Element_Click" />
+            </controls:CommandBarFlyout.SecondaryCommands>
+        </controls:CommandBarFlyout>
+
+    </Page.Resources>
+    <Page.Background>
+        <AcrylicBrush BackgroundSource="HostBackdrop"
+                      TintColor="{ThemeResource SystemColorBackgroundColor}"
+                      TintOpacity="0.9"
+                      FallbackColor="{ThemeResource ApplicationPageBackgroundThemeBrush}" />
+    </Page.Background>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="32" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock xmlns:appmodel="using:Windows.ApplicationModel"
+                   Text="{x:Bind appmodel:Package.Current.DisplayName}"
+                   Style="{StaticResource CaptionTextBlockStyle}"
+                   IsHitTestVisible="False"
+                   Margin="12 8 0 0" />
+
+        <Image Source="/Assets/XamlFlix.png"
+               Height="60"
+               VerticalAlignment="Top"
+               HorizontalAlignment="Right"
+               Margin="6"
+               Grid.Row="1" />
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                      VerticalScrollMode="Auto"
+                      HorizontalScrollMode="Disabled"
+                      Grid.Row="2">
+            <controls:ItemsRepeater x:Name="GenreRepeater"
+                                    ItemTemplate="{StaticResource GenreTemplate}"
+                                    Layout="{StaticResource VerticalStackLayout}"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch" />
+        </ScrollViewer>
+
+        <ContentControl x:Name="FakeTarget"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Left"
+                        Width="40"
+                        Grid.Row="2" />
+
+        <controls:TeachingTip x:Name="ScrollTeachingTip"
+                              Target="{x:Bind FakeTarget}"
+                              Title="I looks like you are trying to scroll."
+                              Subtitle="
+                              
+                              With the mouse on this filmstrip you'll scroll vertically."
+                              PreferredPlacement="Right"
+                              
+                              IsOpen="False">
+            <!--<controls:TeachingTip.HeroContent>
+                <Image Source="/Assets/Clippy.png" />
+            </controls:TeachingTip.HeroContent>-->
+            <controls:TeachingTip.IconSource>
+                <controls:SymbolIconSource Symbol="Sort" />
+            </controls:TeachingTip.IconSource>
+        </controls:TeachingTip>
+        <ContentDialog x:Name="MediaPlayerDialog"
+                       Closing="MediaPlayerDialog_Closing"
+                       CloseButtonText="Close">
+            <StackPanel>
+                <TextBlock x:Name="TitleText"
+                           Margin="0 0 0 20" />
+                <MediaPlayerElement x:Name="Player"
+                                    AreTransportControlsEnabled="True"
+                                    MinWidth="600"
+                                    AutoPlay="True" />
+            </StackPanel>
+        </ContentDialog>
+    </Grid>
+</Page>
